@@ -26,6 +26,8 @@
 
 [非同期について](./docs/async-await.md)
 
+[バックエンドの実装](./docs/backend.md)
+
 
 
 ## 概要
@@ -115,6 +117,8 @@ sequenceDiagram
     user->>auth:　ユーザー認証(ログイン)
     auth->>user: トークンを返却
     user->>app: トークン付きのリクエスト
+    app->>auth: トークンの認証
+    auth->>app: ユーザーIDを取得
     app->>db: SQLの発行
     db->>app: SQLの結果
     app->>user: JSON形式のデータを返却
@@ -593,10 +597,15 @@ sequenceDiagram
     Note left of app: POST ユーザ-の基本情報をペイロード
     app->>app: バリデーションチェック
     app->>db: SQLを発行
-    Note left of db: 登録
+    Note left of db: ユーザー情報を登録
     db->>app: SQLの結果
+    Note right of app: 登録した結果
+    app->>auth: トークンの構成を更新
+    Note right of auth: クレームにユーザーIDを格納
     app->>page: レスポンス
-    Note Right of page: 302 リダイレクト
+    page->>auth: トークンを更新
+    auth->>page: 新しいトークンを返却
+    Note right of page: ユーザーIDを格納したトークンを取得
     page->>redirect_page: リダイレクト
 ```
 
